@@ -6,7 +6,8 @@
     "PlayerEntityMixin",
     "PlayerListEntryMixin",
     "PlayerListHudMixin",
-    "ChatHudMixin"
+    "ChatHudMixin",
+    "PlayerListHudRenderMixin"
   ],
   "injectors": {
     "defaultRequire": 1
