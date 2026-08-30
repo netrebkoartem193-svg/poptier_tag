@@ -1,21 +1,17 @@
 package com.poptiers;
 
 import net.fabricmc.api.ClientModInitializer;
-import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 
 public class PopTiersClient implements ClientModInitializer {
-    private int ticks = 0;
-
     @Override
     public void onInitializeClient() {
+        // Первичная загрузка при старте
         PopTiersDownloader.fetchTiers();
 
-        ClientTickEvents.END_CLIENT_TICK.register(client -> {
-            ticks++;
-            if (ticks >= 1200) {
-                ticks = 0;
-                PopTiersDownloader.fetchTiers();
-            }
+        // Автоматическое обновление при каждом входе на сервер/в мир
+        ClientPlayConnectionEvents.JOIN.register((handler, sender, client) -> {
+            PopTiersDownloader.fetchTiers();
         });
     }
 }
