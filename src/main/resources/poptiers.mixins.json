@@ -4,8 +4,9 @@
   "compatibilityLevel": "JAVA_21",
   "client": [
     "PlayerEntityMixin",
-    "PlayerListEntryMixin"
-  ],
+    "PlayerListEntryMixin",
+    "PlayerListHudMixin"
+  ]
   "injectors": {
     "defaultRequire": 1
   }
