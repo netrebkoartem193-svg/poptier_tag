@@ -19,13 +19,14 @@ public class PopTiersDownloader {
             try {
                 URL url = new URI(RENTRY_URL).toURL();
                 try (InputStreamReader reader = new InputStreamReader(url.openStream())) {
-                    Type type = new TypeToken<Map<String, String>>() {}.getType();
+                    Type type = new TypeToken<Map<String, String>>(){}.getType();
                     Map<String, String> result = new Gson().fromJson(reader, type);
                     if (result != null) {
                         tiersMap.clear();
-                        // Сохраняем ключи в нижнем регистре для удобного поиска
                         for (Map.Entry<String, String> entry : result.entrySet()) {
-                            tiersMap.put(entry.getKey().toLowerCase(), entry.getValue());
+                            if (entry.getKey() != null && entry.getValue() != null) {
+                                tiersMap.put(entry.getKey().toLowerCase(), entry.getValue());
+                            }
                         }
                     }
                 }
@@ -37,7 +38,7 @@ public class PopTiersDownloader {
     }
 
     public static String getTierForPlayer(String playerName) {
-        if (playerName == null || tiersMap == null) return null;
+        if (playerName == null || tiersMap.isEmpty()) return null;
         return tiersMap.get(playerName.toLowerCase());
     }
 }
