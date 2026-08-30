@@ -23,7 +23,10 @@ public class PopTiersDownloader {
                     Map<String, String> result = new Gson().fromJson(reader, type);
                     if (result != null) {
                         tiersMap.clear();
-                        tiersMap.putAll(result);
+                        // Сохраняем ключи в нижнем регистре для удобного поиска
+                        for (Map.Entry<String, String> entry : result.entrySet()) {
+                            tiersMap.put(entry.getKey().toLowerCase(), entry.getValue());
+                        }
                     }
                 }
             } catch (Exception ignored) {
@@ -31,5 +34,10 @@ public class PopTiersDownloader {
         });
         thread.setDaemon(true);
         thread.start();
+    }
+
+    public static String getTierForPlayer(String playerName) {
+        if (playerName == null || tiersMap == null) return null;
+        return tiersMap.get(playerName.toLowerCase());
     }
 }
