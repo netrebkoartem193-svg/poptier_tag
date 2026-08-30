@@ -1,8 +1,13 @@
 {
   "schemaVersion": 1,
   "id": "poptiers",
-  "name": "PopTiers",
   "version": "${version}",
+  "name": "PopTiers",
+  "description": "Displays player tiers from Rentry",
+  "authors": [],
+  "contact": {},
+  "license": "MIT",
+  "icon": "assets/poptiers/icon.png",
   "environment": "client",
   "entrypoints": {
     "client": [
@@ -14,6 +19,7 @@
   ],
   "depends": {
     "fabricloader": ">=0.16.0",
-    "minecraft": "~1.21.4"
+    "minecraft": "~1.21.4",
+    "java": ">=21"
   }
 }
