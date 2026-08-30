@@ -18,8 +18,8 @@ public abstract class PlayerEntityMixin {
             PlayerEntity player = (PlayerEntity) (Object) this;
             String name = player.getGameProfile() != null ? player.getGameProfile().getName() : null;
 
-            if (name != null && PopTiersDownloader.tiersMap != null && PopTiersDownloader.tiersMap.containsKey(name)) {
-                String tier = PopTiersDownloader.tiersMap.get(name);
+            if (name != null) {
+                String tier = PopTiersDownloader.getTierForPlayer(name);
                 if (tier != null) {
                     Text original = cir.getReturnValue();
                     MutableText formatted = Text.literal(tier + " ").append(original != null ? original : Text.literal(name));
