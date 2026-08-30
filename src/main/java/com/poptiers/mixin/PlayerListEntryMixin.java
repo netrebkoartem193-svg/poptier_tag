@@ -18,14 +18,12 @@ public abstract class PlayerListEntryMixin {
             PlayerListEntry entry = (PlayerListEntry) (Object) this;
             if (entry.getProfile() != null) {
                 String name = entry.getProfile().getName();
-                if (name != null) {
-                    String tier = PopTiersDownloader.getTierForPlayer(name);
-                    if (tier != null) {
-                        Text current = cir.getReturnValue();
-                        Text baseName = (current != null) ? current : Text.literal(name);
-                        MutableText formatted = Text.literal(tier + " ").append(baseName);
-                        cir.setReturnValue(formatted);
-                    }
+                String tier = PopTiersDownloader.getTierForPlayer(name);
+                if (tier != null) {
+                    Text current = cir.getReturnValue();
+                    Text baseName = (current != null) ? current : Text.literal(name);
+                    MutableText formatted = Text.literal(tier + " ").append(baseName);
+                    cir.setReturnValue(formatted);
                 }
             }
         } catch (Exception ignored) {
