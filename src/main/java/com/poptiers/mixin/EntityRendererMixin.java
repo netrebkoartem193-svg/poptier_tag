@@ -18,13 +18,16 @@ public abstract class EntityRendererMixin {
         argsOnly = true
     )
     private Text modifyPlayerNametag(Text text, Entity entity) {
-        if (entity instanceof PlayerEntity player) {
-            String playerName = player.getGameProfile().getName();
-            
-            if (PopTiersDownloader.tiersMap != null && PopTiersDownloader.tiersMap.containsKey(playerName)) {
-                String tier = PopTiersDownloader.tiersMap.get(playerName);
-                return Text.literal(tier + " ").append(text != null ? text : player.getDisplayName());
+        try {
+            if (entity instanceof PlayerEntity player) {
+                String playerName = player.getGameProfile().getName();
+                if (PopTiersDownloader.tiersMap != null && PopTiersDownloader.tiersMap.containsKey(playerName)) {
+                    String tier = PopTiersDownloader.tiersMap.get(playerName);
+                    return Text.literal(tier + " ").append(text != null ? text : player.getDisplayName());
+                }
             }
+        } catch (Exception e) {
+            // Предотвращает вылет игры при ошибке рендера
         }
         return text;
     }
