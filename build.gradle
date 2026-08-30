@@ -26,7 +26,7 @@ dependencies {
     // Fabric Loader
     modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
 
-    // Fabric API (необходим для ClientTickEvents)
+    // Fabric API
     modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 }
 
@@ -55,6 +55,6 @@ java {
 
 jar {
     from("LICENSE") {
-        rename "${it}_${project.archivesBaseName}", "${it}"
+        rename "${it}_${base.archivesName.get()}", "${it}"
     }
 }
