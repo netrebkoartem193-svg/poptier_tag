@@ -2,6 +2,7 @@ package com.poptiers.mixin;
 
 import com.poptiers.PopTiersDownloader;
 import net.minecraft.client.network.PlayerListEntry;
+import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -12,17 +13,18 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public abstract class PlayerListEntryMixin {
 
     @Inject(method = "getDisplayName", at = @At("RETURN"), cancellable = true)
-    private void modifyTabDisplayName(CallbackInfoReturnable<Text> cir) {
+    private void injectTabTierPrefix(CallbackInfoReturnable<Text> cir) {
         try {
             PlayerListEntry entry = (PlayerListEntry) (Object) this;
             if (entry.getProfile() != null) {
-                String playerName = entry.getProfile().getName();
-                if (playerName != null && PopTiersDownloader.tiersMap != null && PopTiersDownloader.tiersMap.containsKey(playerName)) {
-                    String tier = PopTiersDownloader.tiersMap.get(playerName);
+                String name = entry.getProfile().getName();
+                if (name != null && PopTiersDownloader.tiersMap != null && PopTiersDownloader.tiersMap.containsKey(name)) {
+                    String tier = PopTiersDownloader.tiersMap.get(name);
                     if (tier != null) {
-                        Text currentName = cir.getReturnValue();
-                        Text prefix = Text.literal(tier + " ");
-                        cir.setReturnValue(prefix.copy().append(currentName != null ? currentName : Text.literal(playerName)));
+                        Text current = cir.getReturnValue();
+                        Text baseName = current != null ? current : Text.literal(name);
+                        MutableText formatted = Text.literal(tier + " ").append(baseName);
+                        cir.setReturnValue(formatted);
                     }
                 }
             }
