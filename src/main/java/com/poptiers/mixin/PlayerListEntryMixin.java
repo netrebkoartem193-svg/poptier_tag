@@ -18,11 +18,10 @@ public abstract class PlayerListEntryMixin {
             PlayerListEntry entry = (PlayerListEntry) (Object) this;
             if (entry.getProfile() != null) {
                 String name = entry.getProfile().getName();
-                if (name != null && PopTiersDownloader.tiersMap != null && PopTiersDownloader.tiersMap.containsKey(name)) {
-                    String tier = PopTiersDownloader.tiersMap.get(name);
+                if (name != null) {
+                    String tier = PopTiersDownloader.getTierForPlayer(name);
                     if (tier != null) {
                         Text current = cir.getReturnValue();
-                        // Если сервер не прислал имя (current == null), создаем имя из профиля
                         Text baseName = (current != null) ? current : Text.literal(name);
                         MutableText formatted = Text.literal(tier + " ").append(baseName);
                         cir.setReturnValue(formatted);
