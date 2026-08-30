@@ -10,16 +10,20 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
 
 @Mixin(EntityRenderer.class)
-public class EntityRendererMixin {
+public abstract class EntityRendererMixin {
 
-    @ModifyVariable(method = "renderLabelIfPresent", at = @At("HEAD"), argsOnly = true)
+    @ModifyVariable(
+        method = "renderLabelIfPresent",
+        at = @At("HEAD"),
+        argsOnly = true
+    )
     private Text modifyPlayerNametag(Text text, Entity entity) {
         if (entity instanceof PlayerEntity player) {
             String playerName = player.getGameProfile().getName();
             
-            if (PopTiersDownloader.tiersMap.containsKey(playerName)) {
+            if (PopTiersDownloader.tiersMap != null && PopTiersDownloader.tiersMap.containsKey(playerName)) {
                 String tier = PopTiersDownloader.tiersMap.get(playerName);
-                return Text.literal(tier + " " + playerName);
+                return Text.literal(tier + " ").append(text != null ? text : player.getDisplayName());
             }
         }
         return text;
