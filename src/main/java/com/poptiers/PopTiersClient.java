@@ -9,9 +9,10 @@ public class PopTiersClient implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
         PopTiersDownloader.fetchTiers();
+
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             ticks++;
-            if (ticks >= 1200) { // каждые 60 секунд
+            if (ticks >= 1200) {
                 ticks = 0;
                 PopTiersDownloader.fetchTiers();
             }
