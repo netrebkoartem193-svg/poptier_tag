@@ -22,7 +22,8 @@ public abstract class PlayerListEntryMixin {
                     String tier = PopTiersDownloader.tiersMap.get(name);
                     if (tier != null) {
                         Text current = cir.getReturnValue();
-                        Text baseName = current != null ? current : Text.literal(name);
+                        // Если сервер не прислал имя (current == null), создаем имя из профиля
+                        Text baseName = (current != null) ? current : Text.literal(name);
                         MutableText formatted = Text.literal(tier + " ").append(baseName);
                         cir.setReturnValue(formatted);
                     }
