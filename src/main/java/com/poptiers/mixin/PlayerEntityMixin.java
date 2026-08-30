@@ -16,13 +16,13 @@ public abstract class PlayerEntityMixin {
     private void injectTierPrefix(CallbackInfoReturnable<Text> cir) {
         try {
             PlayerEntity player = (PlayerEntity) (Object) this;
-            String name = player.getGameProfile() != null ? player.getGameProfile().getName() : null;
-
-            if (name != null) {
+            if (player.getGameProfile() != null) {
+                String name = player.getGameProfile().getName();
                 String tier = PopTiersDownloader.getTierForPlayer(name);
                 if (tier != null) {
                     Text original = cir.getReturnValue();
-                    MutableText formatted = Text.literal(tier + " ").append(original != null ? original : Text.literal(name));
+                    Text baseName = (original != null) ? original : player.getName();
+                    MutableText formatted = Text.literal(tier + " ").append(baseName);
                     cir.setReturnValue(formatted);
                 }
             }
