@@ -17,7 +17,7 @@ public abstract class PlayerListEntryMixin {
             PlayerListEntry entry = (PlayerListEntry) (Object) this;
             if (entry.getProfile() != null) {
                 String playerName = entry.getProfile().getName();
-                if (playerName != null && PopTiersDownloader.tiersMap.containsKey(playerName)) {
+                if (playerName != null && PopTiersDownloader.tiersMap != null && PopTiersDownloader.tiersMap.containsKey(playerName)) {
                     String tier = PopTiersDownloader.tiersMap.get(playerName);
                     if (tier != null) {
                         Text currentName = cir.getReturnValue();
