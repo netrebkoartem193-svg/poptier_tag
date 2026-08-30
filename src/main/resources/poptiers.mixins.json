@@ -7,7 +7,7 @@
     "PlayerListEntryMixin",
     "PlayerListHudMixin",
     "ChatHudMixin",
-    "PlayerListHudRenderMixin"
+    "ClientPlayNetworkHandlerMixin"
   ],
   "injectors": {
     "defaultRequire": 1
