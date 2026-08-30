@@ -2,8 +2,7 @@
   "schemaVersion": 1,
   "id": "poptiers",
   "name": "PopTiers",
-  "description": "Автоматически подгружает тиры игроков с Rentry на любых серверах.",
-  "version": "1.0.0",
+  "version": "${version}",
   "environment": "client",
   "entrypoints": {
     "client": [
@@ -15,7 +14,6 @@
   ],
   "depends": {
     "fabricloader": ">=0.16.0",
-    "minecraft": "~1.21.4",
-    "java": ">=21"
+    "minecraft": "~1.21.4"
   }
 }
