@@ -36,7 +36,6 @@ public class PopTiersDownloader {
                 String rawContent = builder.toString().trim();
                 tiersMap.clear();
 
-                // Попытка 1: Парсим как JSON
                 if (rawContent.startsWith("{")) {
                     Type type = new TypeToken<Map<String, String>>() {}.getType();
                     Map<String, String> result = new Gson().fromJson(rawContent, type);
@@ -48,7 +47,6 @@ public class PopTiersDownloader {
                         }
                     }
                 } else {
-                    // Попытка 2: Парсим строчный текст вида "Ник: Тир" или "Ник=Тир"
                     String[] lines = rawContent.split("\n");
                     for (String l : lines) {
                         if (l.contains(":")) {
