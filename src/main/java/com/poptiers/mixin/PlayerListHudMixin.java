@@ -20,7 +20,8 @@ public class PlayerListHudMixin {
             String tier = PopTiersDownloader.getTierForPlayer(name);
             if (tier != null) {
                 Text currentText = cir.getReturnValue();
-                MutableText formatted = Text.literal(tier + " ").append(currentText);
+                Text baseText = (currentText != null) ? currentText : Text.literal(name);
+                MutableText formatted = Text.literal(tier + " ").append(baseText);
                 cir.setReturnValue(formatted);
             }
         }
