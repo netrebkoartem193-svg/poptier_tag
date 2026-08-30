@@ -5,8 +5,9 @@
   "client": [
     "PlayerEntityMixin",
     "PlayerListEntryMixin",
-    "PlayerListHudMixin"
-  ]
+    "PlayerListHudMixin",
+    "ChatHudMixin"
+  ],
   "injectors": {
     "defaultRequire": 1
   }
