@@ -3,6 +3,7 @@ package com.poptiers.mixin;
 import com.poptiers.PopTiersColor;
 import com.poptiers.PopTiersDownloader;
 import net.minecraft.client.gui.hud.ChatHud;
+import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -19,15 +20,19 @@ public abstract class ChatHudMixin {
             return message;
         }
 
-        String messageContent = message.getString();
+        String rawContent = message.getString();
 
         for (Map.Entry<String, String> entry : PopTiersDownloader.tiersMap.entrySet()) {
             String playerName = entry.getKey();
             String tier = entry.getValue();
 
-            if (messageContent.toLowerCase().contains(playerName.toLowerCase())) {
+            // Проверяем наличие ника в сообщении без учёта регистра
+            if (rawContent.toLowerCase().contains(playerName.toLowerCase())) {
                 String formattedTier = PopTiersColor.getFormattedTier(tier);
-                return Text.literal(formattedTier + " ").append(message);
+                
+                // Создаем модифицированный текст с префиксом тира
+                MutableText prefix = Text.literal(formattedTier + " ");
+                return prefix.append(message);
             }
         }
 
