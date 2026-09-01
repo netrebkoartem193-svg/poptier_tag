@@ -2,23 +2,20 @@ package com.poptiers.mixin;
 
 import com.poptiers.PopTiersColor;
 import com.poptiers.PopTiersDownloader;
-import net.minecraft.client.network.PlayerListEntry;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.text.Text;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-@Mixin(PlayerListEntry.class)
-public abstract class PlayerListEntryMixin {
-
-    @Shadow
-    public abstract com.mojang.authlib.GameProfile getProfile();
+@Mixin(PlayerEntity.class)
+public abstract class PlayerEntityMixin {
 
     @Inject(method = "getDisplayName", at = @At("RETURN"), cancellable = true)
-    private void injectTierToTab(CallbackInfoReturnable<Text> cir) {
-        String username = getProfile().getName();
+    private void injectTierToName(CallbackInfoReturnable<Text> cir) {
+        PlayerEntity player = (PlayerEntity) (Object) this;
+        String username = player.getGameProfile().getName();
         String tier = PopTiersDownloader.getTierForPlayer(username);
 
         if (tier != null) {
@@ -28,7 +25,7 @@ public abstract class PlayerListEntryMixin {
             }
 
             String formattedTier = PopTiersColor.getFormattedTier(tier);
-            Text result = Text.empty().append(originalName).append(Text.literal(" " + formattedTier));
+            Text result = Text.literal(formattedTier + " ").append(originalName);
 
             cir.setReturnValue(result);
         }
