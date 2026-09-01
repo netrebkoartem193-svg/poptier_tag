@@ -25,7 +25,6 @@ public abstract class PlayerEntityMixin {
             }
 
             String formattedTier = PopTiersColor.getFormattedTier(tier);
-
             Text result = Text.literal(formattedTier + " ").append(originalName);
 
             cir.setReturnValue(result);
