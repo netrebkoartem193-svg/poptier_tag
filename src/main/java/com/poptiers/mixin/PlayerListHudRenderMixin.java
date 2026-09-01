@@ -14,14 +14,19 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(PlayerListHud.class)
 public abstract class PlayerListHudRenderMixin {
 
-    @Inject(method = "getPlayerName", at = @At("RETURN"), cancellable = true)
+    @Inject(
+        method = "getPlayerName", 
+        at = @At("RETURN"), 
+        cancellable = true,
+        require = 1
+    )
     private void injectTierToTabRender(PlayerListEntry entry, CallbackInfoReturnable<Text> cir) {
         if (entry == null || entry.getProfile() == null) {
             return;
         }
 
         String username = entry.getProfile().getName();
-        if (username == null) {
+        if (username == null || username.isEmpty()) {
             return;
         }
 
@@ -29,9 +34,13 @@ public abstract class PlayerListHudRenderMixin {
 
         if (tier != null) {
             Text originalName = cir.getReturnValue();
+            
+            // Если оригинальное имя почему-то null, используем стандартное имя из профиля
+            Text baseName = (originalName != null) ? originalName : Text.literal(username);
+            
             String formattedTier = PopTiersColor.getFormattedTier(tier);
 
-            MutableText result = Text.literal(formattedTier + " ").append(originalName.copy());
+            MutableText result = Text.literal(formattedTier + " ").append(baseName.copy());
             cir.setReturnValue(result);
         }
     }
