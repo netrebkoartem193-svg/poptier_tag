@@ -1,4 +1,4 @@
-package com.poptiers;
+package com.poptiers.mod;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -11,10 +11,10 @@ import java.util.Map;
 
 public class PopTiersDownloader {
 
-    // Прямая API-ссылка с npoint.io
+    // Твоя работающая прямая API-ссылка с npoint.io
     private static final String TIERS_URL = "https://api.npoint.io/e43fdbada1a4dce0fb88";
     
-    // Хранилище загруженных тиров (Никнейм -> Префикс/Тир)
+    // Хранилище загруженных тиров
     public static final Map<String, String> TIERS_MAP = new HashMap<>();
 
     public static void loadTiers() {
