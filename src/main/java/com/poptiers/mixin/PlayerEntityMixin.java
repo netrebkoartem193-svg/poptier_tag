@@ -24,12 +24,11 @@ public abstract class PlayerEntityMixin {
                 originalName = Text.literal(username);
             }
 
-            Text formattedText = Text.empty()
-                    .append(PopTiersColor.getFormattedTierText(tier))
-                    .append(Text.literal(" "))
-                    .append(originalName);
+            String formattedTier = PopTiersColor.getFormattedTier(tier);
 
-            cir.setReturnValue(formattedText);
+            Text result = Text.literal(formattedTier + " ").append(originalName);
+
+            cir.setReturnValue(result);
         }
     }
 }
