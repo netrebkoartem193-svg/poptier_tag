@@ -14,30 +14,27 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(PlayerListHud.class)
 public abstract class PlayerListHudRenderMixin {
 
-    @Inject(
-        method = "getPlayerName", 
-        at = @At("RETURN"), 
-        cancellable = true,
-        require = 1
-    )
+    @Inject(method = "getPlayerName", at = @At("RETURN"), cancellable = true)
     private void injectTierToTabRender(PlayerListEntry entry, CallbackInfoReturnable<Text> cir) {
         if (entry == null || entry.getProfile() == null) {
             return;
         }
 
-        String username = entry.getProfile().getName();
-        if (username == null || username.isEmpty()) {
+        // Чистый ник из Mojang/Netty профиля
+        String cleanUsername = entry.getProfile().getName();
+        if (cleanUsername == null || cleanUsername.isEmpty()) {
             return;
         }
 
-        String tier = PopTiersDownloader.getTierForPlayer(username);
+        // Ищем тир в базе (поиск теперь регистронезависимый)
+        String tier = PopTiersDownloader.getTierForPlayer(cleanUsername);
 
         if (tier != null) {
-            Text originalName = cir.getReturnValue();
+            Text original = cir.getReturnValue();
             
-            // Если оригинальное имя почему-то null, используем стандартное имя из профиля
-            Text baseName = (originalName != null) ? originalName : Text.literal(username);
-            
+            // Если оригинального текста нет (обычные игроки), берём чистый ник
+            Text baseName = (original != null) ? original : Text.literal(cleanUsername);
+
             String formattedTier = PopTiersColor.getFormattedTier(tier);
 
             MutableText result = Text.literal(formattedTier + " ").append(baseName.copy());
