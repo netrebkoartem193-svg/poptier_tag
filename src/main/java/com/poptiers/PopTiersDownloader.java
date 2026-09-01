@@ -13,7 +13,8 @@ public class PopTiersDownloader {
 
     private static final String TIERS_URL = "https://api.npoint.io/e43fdbada1a4dce0fb88";
     
-    public static final Map<String, String> TIERS_MAP = new HashMap<>();
+    // Переменная называется tiersMap, как требуют миксины
+    public static final Map<String, String> tiersMap = new HashMap<>();
 
     public static void loadTiers() {
         new Thread(() -> {
@@ -33,12 +34,12 @@ public class PopTiersDownloader {
                     Map<String, String> fetchedMap = gson.fromJson(reader, type);
                     reader.close();
 
-                    TIERS_MAP.clear();
+                    tiersMap.clear();
                     if (fetchedMap != null) {
                         for (Map.Entry<String, String> entry : fetchedMap.entrySet()) {
-                            TIERS_MAP.put(entry.getKey().toLowerCase(), entry.getValue());
+                            tiersMap.put(entry.getKey().toLowerCase(), entry.getValue());
                         }
-                        System.out.println("[PopTiers] Успешно загружено тиров: " + TIERS_MAP.size());
+                        System.out.println("[PopTiers] Успешно загружено тиров: " + tiersMap.size());
                     }
                 } else {
                     System.out.println("[PopTiers] Ошибка сервера: HTTP код " + conn.getResponseCode());
@@ -51,6 +52,6 @@ public class PopTiersDownloader {
 
     public static String getTierForPlayer(String playerName) {
         if (playerName == null) return null;
-        return TIERS_MAP.get(playerName.toLowerCase());
+        return tiersMap.get(playerName.toLowerCase());
     }
 }
