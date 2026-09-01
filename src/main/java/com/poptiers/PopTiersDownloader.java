@@ -1,4 +1,4 @@
-package com.poptiers.mod;
+package com.poptiers;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -11,7 +11,7 @@ import java.util.Map;
 
 public class PopTiersDownloader {
 
-    // Твоя прямая API-ссылка с npoint.io
+    // Прямая API-ссылка с npoint.io
     private static final String TIERS_URL = "https://api.npoint.io/e43fdbada1a4dce0fb88";
     
     // Хранилище загруженных тиров (Никнейм -> Префикс/Тир)
@@ -38,7 +38,6 @@ public class PopTiersDownloader {
                     TIERS_MAP.clear();
                     if (fetchedMap != null) {
                         for (Map.Entry<String, String> entry : fetchedMap.entrySet()) {
-                            // Сохраняем ник в нижнем регистре для удобной проверки
                             TIERS_MAP.put(entry.getKey().toLowerCase(), entry.getValue());
                         }
                         System.out.println("[PopTiers] Успешно загружено тиров: " + TIERS_MAP.size());
@@ -52,7 +51,6 @@ public class PopTiersDownloader {
         }).start();
     }
 
-    // Метод для получения префикса по нику
     public static String getTierForPlayer(String playerName) {
         if (playerName == null) return null;
         return TIERS_MAP.get(playerName.toLowerCase());
