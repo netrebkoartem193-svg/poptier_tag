@@ -1,39 +1,42 @@
 package com.poptiers.mixin;
 
+import com.poptiers.PopTiersColor;
 import com.poptiers.PopTiersDownloader;
-import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.hud.PlayerListHud;
 import net.minecraft.client.network.PlayerListEntry;
+import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Redirect;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(PlayerListHud.class)
-public class PlayerListHudRenderMixin {
+public abstract class PlayerListHudMixin {
 
-    @Redirect(
-        method = "render",
-        at = @At(
-            value = "INVOKE",
-            target = "Lnet/minecraft/client/gui/DrawContext;drawTextWithShadow(Lnet/minecraft/client/font/TextRenderer;Lnet/minecraft/text/Text;III)I"
-        )
-    )
-    private int redirectDrawText(DrawContext context, net.minecraft.client.font.TextRenderer textRenderer, Text text, int x, int y, int color) {
-        if (text != null && !PopTiersDownloader.tiersMap.isEmpty()) {
-            String rawString = text.getString();
-            
-            for (var entry : PopTiersDownloader.tiersMap.entrySet()) {
-                String playerName = entry.getKey();
-                String tier = entry.getValue();
-                
-                // Если строчка ТАБа содержит ник из Rentry, пририсовываем тир спереди
-                if (rawString.toLowerCase().contains(playerName)) {
-                    Text newText = Text.literal(tier + " ").append(text);
-                    return context.drawTextWithShadow(textRenderer, newText, x, y, color);
-                }
-            }
+    @Inject(method = "getPlayerName", at = @At("RETURN"), cancellable = true)
+    private void injectTierToTabRender(PlayerListEntry entry, CallbackInfoReturnable<Text> cir) {
+        if (entry == null || entry.getProfile() == null) {
+            return;
         }
-        return context.drawTextWithShadow(textRenderer, text, x, y, color);
+
+        String username = entry.getProfile().getName();
+        if (username == null) {
+            return;
+        }
+
+        String tier = PopTiersDownloader.getTierForPlayer(username);
+
+        if (tier != null) {
+            // cir.getReturnValue() содержит УЖЕ полностью отрендеренное сервером имя (со скорбордами, командами и префиксами)
+            Text originalName = cir.getReturnValue();
+            
+            String formattedTier = PopTiersColor.getFormattedTier(tier);
+            
+            // Склеиваем тир с уже сформированным именем
+            MutableText result = Text.literal(formattedTier + " ").append(originalName.copy());
+
+            cir.setReturnValue(result);
+        }
     }
 }
