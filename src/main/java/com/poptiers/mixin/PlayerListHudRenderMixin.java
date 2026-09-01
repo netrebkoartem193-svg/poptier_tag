@@ -12,7 +12,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(PlayerListHud.class)
-public abstract class PlayerListHudMixin {
+public abstract class PlayerListHudRenderMixin {
 
     @Inject(method = "getPlayerName", at = @At("RETURN"), cancellable = true)
     private void injectTierToTabRender(PlayerListEntry entry, CallbackInfoReturnable<Text> cir) {
@@ -28,14 +28,10 @@ public abstract class PlayerListHudMixin {
         String tier = PopTiersDownloader.getTierForPlayer(username);
 
         if (tier != null) {
-            // cir.getReturnValue() содержит УЖЕ полностью отрендеренное сервером имя (со скорбордами, командами и префиксами)
             Text originalName = cir.getReturnValue();
-            
             String formattedTier = PopTiersColor.getFormattedTier(tier);
-            
-            // Склеиваем тир с уже сформированным именем
-            MutableText result = Text.literal(formattedTier + " ").append(originalName.copy());
 
+            MutableText result = Text.literal(formattedTier + " ").append(originalName.copy());
             cir.setReturnValue(result);
         }
     }
