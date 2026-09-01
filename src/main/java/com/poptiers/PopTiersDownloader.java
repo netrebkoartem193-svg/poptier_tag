@@ -1,4 +1,4 @@
-package com.poptiers.mod;
+package com.poptiers;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
