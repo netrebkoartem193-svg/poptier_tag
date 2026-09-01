@@ -1,31 +1,29 @@
 package com.poptiers;
 
-import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
-
 public class PopTiersColor {
 
-    public static Text getFormattedTierText(String tier) {
+    public static String getFormattedTier(String tier) {
         if (tier == null || tier.isEmpty()) {
-            return Text.empty();
+            return "";
         }
 
+        // Удаляем все лишние скобки и пробелы из исходной базы
         String cleanTier = tier.replaceAll("[\\[\\]]", "").trim().toUpperCase();
 
-        Formatting color;
+        String colorCode;
 
         if (cleanTier.contains("RLT")) {
-            color = Formatting.GRAY;
+            colorCode = "§7"; // Серый
         } else if (cleanTier.contains("LT")) {
-            color = Formatting.AQUA;
+            colorCode = "§b"; // Голубой
         } else if (cleanTier.contains("HT")) {
-            color = Formatting.RED;
+            colorCode = "§c"; // Красный
         } else if (cleanTier.contains("RHT")) {
-            color = Formatting.DARK_GRAY;
+            colorCode = "§8"; // Тёмно-серый
         } else {
-            color = Formatting.WHITE;
+            colorCode = "§f"; // Белый
         }
 
-        return Text.literal("[" + cleanTier + "]").formatted(color);
+        return colorCode + "[" + cleanTier + "]§r";
     }
 }
