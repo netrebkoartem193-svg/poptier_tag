@@ -26,10 +26,8 @@ public abstract class ChatHudMixin {
             String tier = entry.getValue();
 
             if (messageContent.toLowerCase().contains(playerName.toLowerCase())) {
-                return Text.empty()
-                        .append(Text.literal(PopTiersColor.getFormattedTier(tier)))
-                        .append(Text.literal(" "))
-                        .append(message);
+                String formattedTier = PopTiersColor.getFormattedTier(tier);
+                return Text.literal(formattedTier + " ").append(message);
             }
         }
 
