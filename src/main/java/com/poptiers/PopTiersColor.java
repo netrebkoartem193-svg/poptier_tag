@@ -1,6 +1,5 @@
 package com.poptiers;
 
-import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 
@@ -10,10 +9,9 @@ public class PopTiersColor {
         if (tier == null || tier.isEmpty()) {
             return Text.empty();
         }
-        
-        // Очищаем от случайных скобок из базы npoint
+
         String cleanTier = tier.replaceAll("[\\[\\]]", "").trim().toUpperCase();
-        
+
         Formatting color;
 
         if (cleanTier.contains("RLT")) {
@@ -28,7 +26,6 @@ public class PopTiersColor {
             color = Formatting.WHITE;
         }
 
-        // Возвращаем правильный цветной компонент Minecraft Text
         return Text.literal("[" + cleanTier + "]").formatted(color);
     }
 }
