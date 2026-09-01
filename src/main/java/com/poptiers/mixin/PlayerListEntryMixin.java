@@ -2,35 +2,35 @@ package com.poptiers.mixin;
 
 import com.poptiers.PopTiersColor;
 import com.poptiers.PopTiersDownloader;
-import net.minecraft.client.gui.hud.ChatHud;
+import net.minecraft.client.network.PlayerListEntry;
 import net.minecraft.text.Text;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.ModifyVariable;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import java.util.Map;
+@Mixin(PlayerListEntry.class)
+public abstract class PlayerListEntryMixin {
 
-@Mixin(ChatHud.class)
-public abstract class ChatHudMixin {
+    @Shadow
+    public abstract com.mojang.authlib.GameProfile getProfile();
 
-    @ModifyVariable(method = "addMessage(Lnet/minecraft/text/Text;)V", at = @At("HEAD"), argsOnly = true)
-    private Text injectTierToChat(Text message) {
-        if (message == null || PopTiersDownloader.tiersMap.isEmpty()) {
-            return message;
-        }
+    @Inject(method = "getDisplayName", at = @At("RETURN"), cancellable = true)
+    private void injectTierToTab(CallbackInfoReturnable<Text> cir) {
+        String username = getProfile().getName();
+        String tier = PopTiersDownloader.getTierForPlayer(username);
 
-        String messageContent = message.getString();
-
-        for (Map.Entry<String, String> entry : PopTiersDownloader.tiersMap.entrySet()) {
-            String playerName = entry.getKey();
-            String tier = entry.getValue();
-
-            if (messageContent.toLowerCase().contains(playerName.toLowerCase())) {
-                String formattedTier = PopTiersColor.getFormattedTier(tier);
-                return Text.literal(formattedTier + " ").append(message);
+        if (tier != null) {
+            Text originalName = cir.getReturnValue();
+            if (originalName == null) {
+                originalName = Text.literal(username);
             }
-        }
 
-        return message;
+            String formattedTier = PopTiersColor.getFormattedTier(tier);
+            Text result = Text.empty().append(originalName).append(Text.literal(" " + formattedTier));
+
+            cir.setReturnValue(result);
+        }
     }
 }
