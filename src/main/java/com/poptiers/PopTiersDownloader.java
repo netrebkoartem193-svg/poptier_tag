@@ -11,10 +11,8 @@ import java.util.Map;
 
 public class PopTiersDownloader {
 
-    // Твоя работающая прямая API-ссылка с npoint.io
     private static final String TIERS_URL = "https://api.npoint.io/e43fdbada1a4dce0fb88";
     
-    // Хранилище загруженных тиров
     public static final Map<String, String> TIERS_MAP = new HashMap<>();
 
     public static void loadTiers() {
