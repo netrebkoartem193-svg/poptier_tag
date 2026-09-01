@@ -24,7 +24,7 @@ public abstract class PlayerEntityMixin {
                 originalName = Text.literal(username);
             }
 
-            // НАД ГОЛОВОЙ: Тир СПЕРЕДИ + Имя
+            // НАД ГОЛОВОЙ: Тир СПЕРЕДИ + Пробел + Имя
             Text formattedText = Text.empty()
                     .append(Text.literal(PopTiersColor.getFormattedTier(tier)))
                     .append(Text.literal(" "))
