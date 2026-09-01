@@ -27,7 +27,7 @@ public abstract class PlayerListEntryMixin {
                 originalName = Text.literal(username);
             }
 
-            // В ТАБЕ: Оригинальное имя/ранг + Тир В КОНЦЕ
+            // В ТАБЕ: Имя + Тир В КОНЦЕ
             Text formattedText = Text.empty()
                     .append(originalName)
                     .append(Text.literal(" "))
