@@ -2,7 +2,6 @@ package com.poptiers.mixin;
 
 import com.poptiers.PopTiersDownloader;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -13,20 +12,23 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public abstract class PlayerEntityMixin {
 
     @Inject(method = "getDisplayName", at = @At("RETURN"), cancellable = true)
-    private void injectTierPrefix(CallbackInfoReturnable<Text> cir) {
-        try {
-            PlayerEntity player = (PlayerEntity) (Object) this;
-            if (player.getGameProfile() != null) {
-                String name = player.getGameProfile().getName();
-                String tier = PopTiersDownloader.getTierForPlayer(name);
-                if (tier != null) {
-                    Text original = cir.getReturnValue();
-                    Text baseName = (original != null) ? original : player.getName();
-                    MutableText formatted = Text.literal(tier + " ").append(baseName);
-                    cir.setReturnValue(formatted);
-                }
+    private void appendTierToPlayerName(CallbackInfoReturnable<Text> cir) {
+        PlayerEntity player = (PlayerEntity) (Object) this;
+        String username = player.getGameProfile().getName();
+        String tier = PopTiersDownloader.getTierForPlayer(username);
+
+        if (tier != null) {
+            Text originalName = cir.getReturnValue();
+            if (originalName == null) {
+                originalName = Text.literal(username);
             }
-        } catch (Exception ignored) {
+
+            // Ник персонажа + [Tier] в конце
+            Text formattedText = Text.empty()
+                    .append(originalName)
+                    .append(Text.literal(" §7[" + tier + "]"));
+
+            cir.setReturnValue(formattedText);
         }
     }
 }
