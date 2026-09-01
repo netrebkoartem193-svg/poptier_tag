@@ -13,7 +13,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public abstract class PlayerEntityMixin {
 
     @Inject(method = "getDisplayName", at = @At("RETURN"), cancellable = true)
-    private void injectTierToHead(CallbackInfoReturnable<Text> cir) {
+    private void injectTierToName(CallbackInfoReturnable<Text> cir) {
         PlayerEntity player = (PlayerEntity) (Object) this;
         String username = player.getGameProfile().getName();
         String tier = PopTiersDownloader.getTierForPlayer(username);
@@ -24,9 +24,8 @@ public abstract class PlayerEntityMixin {
                 originalName = Text.literal(username);
             }
 
-            // НАД ГОЛОВОЙ: Тир СПЕРЕДИ + Пробел + Имя
             Text formattedText = Text.empty()
-                    .append(Text.literal(PopTiersColor.getFormattedTier(tier)))
+                    .append(PopTiersColor.getFormattedTierText(tier))
                     .append(Text.literal(" "))
                     .append(originalName);
 
