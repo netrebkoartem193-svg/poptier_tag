@@ -1,5 +1,6 @@
 package com.poptiers.mixin;
 
+import com.poptiers.PopTiersColor;
 import com.poptiers.PopTiersDownloader;
 import net.minecraft.client.gui.hud.ChatHud;
 import net.minecraft.text.Text;
@@ -13,7 +14,7 @@ import java.util.Map;
 public abstract class ChatHudMixin {
 
     @ModifyVariable(method = "addMessage(Lnet/minecraft/text/Text;)V", at = @At("HEAD"), argsOnly = true)
-    private Text appendTierToChatMessage(Text message) {
+    private Text injectTierToChat(Text message) {
         if (message == null || PopTiersDownloader.tiersMap.isEmpty()) {
             return message;
         }
@@ -24,12 +25,12 @@ public abstract class ChatHudMixin {
             String playerName = entry.getKey();
             String tier = entry.getValue();
 
-            // Если в строке чата встречается ник игрока из нашей базы
             if (messageContent.toLowerCase().contains(playerName.toLowerCase())) {
-                // Добавляем тир в конец сообщения в чате
+                // В ЧАТЕ: Тир В НАЧАЛЕ + Сообщение
                 return Text.empty()
-                        .append(message)
-                        .append(Text.literal(" §7[" + tier + "]"));
+                        .append(Text.literal(PopTiersColor.getFormattedTier(tier)))
+                        .append(Text.literal(" "))
+                        .append(message);
             }
         }
 
