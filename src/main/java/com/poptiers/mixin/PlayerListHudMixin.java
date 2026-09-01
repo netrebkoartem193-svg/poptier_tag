@@ -1,29 +1,38 @@
 package com.poptiers.mixin;
 
+import com.poptiers.PopTiersColor;
 import com.poptiers.PopTiersDownloader;
-import net.minecraft.client.gui.hud.PlayerListHud;
-import net.minecraft.client.network.PlayerListEntry;
-import net.minecraft.text.MutableText;
+import net.minecraft.client.gui.hud.ChatHud;
 import net.minecraft.text.Text;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+import org.spongepowered.asm.mixin.injection.ModifyVariable;
 
-@Mixin(PlayerListHud.class)
-public class PlayerListHudMixin {
+import java.util.Map;
 
-    @Inject(method = "getPlayerName", at = @At("RETURN"), cancellable = true)
-    private void injectTierToHud(PlayerListEntry entry, CallbackInfoReturnable<Text> cir) {
-        if (entry != null && entry.getProfile() != null) {
-            String name = entry.getProfile().getName();
-            String tier = PopTiersDownloader.getTierForPlayer(name);
-            if (tier != null) {
-                Text currentText = cir.getReturnValue();
-                Text baseText = (currentText != null) ? currentText : Text.literal(name);
-                MutableText formatted = Text.literal(tier + " ").append(baseText);
-                cir.setReturnValue(formatted);
+@Mixin(ChatHud.class)
+public abstract class ChatHudMixin {
+
+    @ModifyVariable(method = "addMessage(Lnet/minecraft/text/Text;)V", at = @At("HEAD"), argsOnly = true)
+    private Text injectTierToChat(Text message) {
+        if (message == null || PopTiersDownloader.tiersMap.isEmpty()) {
+            return message;
+        }
+
+        String messageContent = message.getString();
+
+        for (Map.Entry<String, String> entry : PopTiersDownloader.tiersMap.entrySet()) {
+            String playerName = entry.getKey();
+            String tier = entry.getValue();
+
+            if (messageContent.toLowerCase().contains(playerName.toLowerCase())) {
+                return Text.empty()
+                        .append(PopTiersColor.getFormattedTierText(tier))
+                        .append(Text.literal(" "))
+                        .append(message);
             }
         }
+
+        return message;
     }
 }
