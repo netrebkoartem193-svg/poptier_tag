@@ -26,7 +26,6 @@ public abstract class ChatHudMixin {
             String tier = entry.getValue();
 
             if (messageContent.toLowerCase().contains(playerName.toLowerCase())) {
-                // В ЧАТЕ: Тир СПЕРЕДИ + Сообщение
                 return Text.empty()
                         .append(Text.literal(PopTiersColor.getFormattedTier(tier)))
                         .append(Text.literal(" "))
