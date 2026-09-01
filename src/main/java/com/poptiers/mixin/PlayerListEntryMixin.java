@@ -30,7 +30,7 @@ public abstract class PlayerListEntryMixin {
             Text formattedText = Text.empty()
                     .append(originalName)
                     .append(Text.literal(" "))
-                    .append(Text.literal(PopTiersColor.getFormattedTier(tier)));
+                    .append(PopTiersColor.getFormattedTierText(tier));
 
             cir.setReturnValue(formattedText);
         }
