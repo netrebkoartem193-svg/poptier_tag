@@ -1,76 +1,60 @@
-package com.poptiers;
+package com.poptiers.mod;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-
-import java.io.BufferedReader;
 import java.io.InputStreamReader;
-import java.lang.reflect.Type;
 import java.net.HttpURLConnection;
-import java.net.URI;
 import java.net.URL;
+import java.lang.reflect.Type;
+import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 public class PopTiersDownloader {
-    public static final Map<String, String> tiersMap = new ConcurrentHashMap<>();
-    private static final String RENTRY_URL = "https://rentry.co/poptier123/raw";
 
-    public static void fetchTiers() {
-        Thread thread = new Thread(() -> {
+    // Твоя прямая API-ссылка с npoint.io
+    private static final String TIERS_URL = "https://api.npoint.io/e43fdbada1a4dce0fb88";
+    
+    // Хранилище загруженных тиров (Никнейм -> Префикс/Тир)
+    public static final Map<String, String> TIERS_MAP = new HashMap<>();
+
+    public static void loadTiers() {
+        new Thread(() -> {
             try {
-                URL url = new URI(RENTRY_URL).toURL();
-                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-                connection.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64)");
-                connection.setConnectTimeout(5000);
-                connection.setReadTimeout(5000);
+                URL url = new URL(TIERS_URL);
+                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                conn.setRequestMethod("GET");
+                conn.setConnectTimeout(5000);
+                conn.setReadTimeout(5000);
+                conn.setRequestProperty("User-Agent", "Mozilla/5.0");
 
-                StringBuilder builder = new StringBuilder();
-                try (BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()))) {
-                    String line;
-                    while ((line = reader.readLine()) != null) {
-                        builder.append(line).append("\n");
-                    }
-                }
+                if (conn.getResponseCode() == 200) {
+                    InputStreamReader reader = new InputStreamReader(conn.getInputStream());
+                    Gson gson = new Gson();
+                    Type type = new TypeToken<Map<String, String>>(){}.getType();
+                    
+                    Map<String, String> fetchedMap = gson.fromJson(reader, type);
+                    reader.close();
 
-                String rawContent = builder.toString().trim();
-                tiersMap.clear();
-
-                if (rawContent.startsWith("{")) {
-                    Type type = new TypeToken<Map<String, String>>() {}.getType();
-                    Map<String, String> result = new Gson().fromJson(rawContent, type);
-                    if (result != null) {
-                        for (Map.Entry<String, String> entry : result.entrySet()) {
-                            if (entry.getKey() != null && entry.getValue() != null) {
-                                tiersMap.put(entry.getKey().toLowerCase(), entry.getValue());
-                            }
+                    TIERS_MAP.clear();
+                    if (fetchedMap != null) {
+                        for (Map.Entry<String, String> entry : fetchedMap.entrySet()) {
+                            // Сохраняем ник в нижнем регистре для удобной проверки
+                            TIERS_MAP.put(entry.getKey().toLowerCase(), entry.getValue());
                         }
+                        System.out.println("[PopTiers] Успешно загружено тиров: " + TIERS_MAP.size());
                     }
                 } else {
-                    String[] lines = rawContent.split("\n");
-                    for (String l : lines) {
-                        if (l.contains(":")) {
-                            String[] parts = l.split(":", 2);
-                            tiersMap.put(parts[0].trim().toLowerCase(), parts[1].trim());
-                        } else if (l.contains("=")) {
-                            String[] parts = l.split("=", 2);
-                            tiersMap.put(parts[0].trim().toLowerCase(), parts[1].trim());
-                        }
-                    }
+                    System.out.println("[PopTiers] Ошибка сервера: HTTP код " + conn.getResponseCode());
                 }
-
-                System.out.println("[PopTiers] Успешно загружено тиров: " + tiersMap.size());
-
             } catch (Exception e) {
-                System.err.println("[PopTiers] Ошибка при загрузке тиров: " + e.getMessage());
+                System.out.println("[PopTiers] Ошибка при загрузке данных: " + e.getMessage());
             }
-        });
-        thread.setDaemon(true);
-        thread.start();
+        }).start();
     }
 
+    // Метод для получения префикса по нику
     public static String getTierForPlayer(String playerName) {
-        if (playerName == null || tiersMap.isEmpty()) return null;
-        return tiersMap.get(playerName.toLowerCase());
+        if (playerName == null) return null;
+        return TIERS_MAP.get(playerName.toLowerCase());
     }
 }
