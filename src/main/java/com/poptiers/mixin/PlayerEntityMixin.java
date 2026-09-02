@@ -2,8 +2,7 @@ package com.poptiers.mixin;
 
 import com.poptiers.PopTiersColor;
 import com.poptiers.PopTiersDownloader;
-import net.minecraft.client.network.AbstractClientPlayerEntity;
-import net.minecraft.client.render.entity.PlayerEntityRenderer;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import org.spongepowered.asm.mixin.Mixin;
@@ -11,16 +10,18 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-@Mixin(PlayerEntityRenderer.class)
-public abstract class PlayerEntityRendererMixin {
+@Mixin(PlayerEntity.class)
+public abstract class PlayerEntityMixin {
 
     @Inject(method = "getDisplayName", at = @At("RETURN"), cancellable = true)
-    private void injectTierToNametag(AbstractClientPlayerEntity entity, CallbackInfoReturnable<Text> cir) {
-        if (entity == null || entity.getGameProfile() == null) {
+    private void injectTierToNametag(CallbackInfoReturnable<Text> cir) {
+        PlayerEntity player = (PlayerEntity) (Object) this;
+        
+        if (player.getGameProfile() == null) {
             return;
         }
 
-        String username = entity.getGameProfile().getName();
+        String username = player.getGameProfile().getName();
         if (username == null || username.isEmpty()) {
             return;
         }
