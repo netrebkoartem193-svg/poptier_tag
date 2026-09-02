@@ -30,10 +30,16 @@ public abstract class PlayerListHudRenderMixin {
         if (tier != null) {
             Text originalText = cir.getReturnValue();
             Text baseName = (originalText != null) ? originalText : Text.literal(username);
-
+            
             String formattedTier = PopTiersColor.getFormattedTier(tier);
-            MutableText fullDisplayName = Text.literal(formattedTier + " ").append(baseName.copy());
+            String prefixWithSpace = formattedTier + " ";
 
+            // Проверяем ТОЛЬКО начало строки. Ник Player1 больше не будет ломать логику.
+            if (baseName.getString().startsWith(prefixWithSpace) || baseName.getString().startsWith(tier + " ")) {
+                return;
+            }
+
+            MutableText fullDisplayName = Text.literal(prefixWithSpace).append(baseName.copy());
             cir.setReturnValue(fullDisplayName);
         }
     }
