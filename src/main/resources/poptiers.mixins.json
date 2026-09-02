@@ -2,12 +2,13 @@
   "required": true,
   "package": "com.poptiers.mixin",
   "compatibilityLevel": "JAVA_21",
-  "mixins": [
-    "PlayerEntityMixin"
-  ],
+  "mixins": [],
   "client": [
-    "PlayerListHudRenderMixin",
-    "ChatHudMixin"
+    "ChatHudMixin",
+    "ClientPlayNetworkHandlerMixin",
+    "PlayerEntityMixin",
+    "PlayerListEntryMixin",
+    "PlayerListHudRenderMixin"
   ],
   "injectors": {
     "defaultRequire": 1
