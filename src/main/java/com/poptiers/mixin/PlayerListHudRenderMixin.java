@@ -7,6 +7,7 @@ import net.minecraft.client.network.PlayerListEntry;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
@@ -14,31 +15,34 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(PlayerListHud.class)
 public abstract class PlayerListHudRenderMixin {
 
-    @Inject(method = "getPlayerName", at = @At("RETURN"), cancellable = true)
-    private void injectTierToTabRender(PlayerListEntry entry, CallbackInfoReturnable<Text> cir) {
+    @Shadow
+    public abstract Text getPlayerName(PlayerListEntry entry);
+
+    @Inject(method = "getPlayerName", at = @At("HEAD"), cancellable = true)
+    private void injectTierToTab(PlayerListEntry entry, CallbackInfoReturnable<Text> cir) {
         if (entry == null || entry.getProfile() == null) {
             return;
         }
 
-        // Чистый ник из Mojang/Netty профиля
-        String cleanUsername = entry.getProfile().getName();
-        if (cleanUsername == null || cleanUsername.isEmpty()) {
+        String username = entry.getProfile().getName();
+        if (username == null || username.isEmpty()) {
             return;
         }
 
-        // Ищем тир в базе (поиск теперь регистронезависимый)
-        String tier = PopTiersDownloader.getTierForPlayer(cleanUsername);
+        String tier = PopTiersDownloader.getTierForPlayer(username);
 
         if (tier != null) {
-            Text original = cir.getReturnValue();
-            
-            // Если оригинального текста нет (обычные игроки), берём чистый ник
-            Text baseName = (original != null) ? original : Text.literal(cleanUsername);
+            // 1. Сначала отменяем выполнения стандартной логики
+            // 2. Получаем официальное имя (или фоллбэк на чистый ник из профиля)
+            Text originalText = entry.getDisplayName();
+            Text baseName = (originalText != null) ? originalText : Text.literal(username);
 
+            // 3. Форматируем тир и склеиваем в один итоговый MutableText
             String formattedTier = PopTiersColor.getFormattedTier(tier);
+            MutableText fullDisplayName = Text.literal(formattedTier + " ").append(baseName.copy());
 
-            MutableText result = Text.literal(formattedTier + " ").append(baseName.copy());
-            cir.setReturnValue(result);
+            // 4. Возвращаем результат в точку HEAD (до того, как игра успеет вернуть null)
+            cir.setReturnValue(fullDisplayName);
         }
     }
 }
